@@ -83,7 +83,9 @@ from nemo.utils.lr_policies import get_lr_policy
 
 parser = argparse.ArgumentParser(description="GLUE_with_pretrained_BERT")
 
-# Parsing arguments
+parser.add_argument("--exp_name", default="default", type=str)
+parser.add_argument("--project", default="qqp-megatron-1-2b", type=str)
+
 parser.add_argument(
     "--data_dir",
     default="COLA",
@@ -298,6 +300,8 @@ callbacks_eval = [
         user_epochs_done_callback=lambda x: eval_epochs_done_callback(x, args.work_dir, eval_task_names[0]),
         tb_writer=nf.tb_writer,
         eval_step=steps_per_epoch,
+        wandb_name=args.exp_name,
+        wandb_project=args.project,
     )
 ]
 
@@ -330,13 +334,21 @@ ckpt_callback = nemo_core.CheckpointCallback(
     folder=nf.checkpoint_dir, epoch_freq=args.save_epoch_freq, step_freq=args.save_step_freq
 )
 
+wand_callback = nemo.core.WandbCallback(
+    train_tensors=[train_loss],
+    wandb_name=args.exp_name,
+    wandb_project=args.project,
+    update_freq=args.loss_step_freq if args.loss_step_freq > 0 else steps_per_epoch,
+    args=args,
+)
+
 lr_policy_fn = get_lr_policy(
     args.lr_policy, total_steps=args.num_epochs * steps_per_epoch, warmup_ratio=args.lr_warmup_proportion
 )
 
 nf.train(
     tensors_to_optimize=[train_loss],
-    callbacks=[callback_train, ckpt_callback] + callbacks_eval,
+    callbacks=[callback_train, ckpt_callback, wand_callback] + callbacks_eval,
     lr_policy=lr_policy_fn,
     optimizer=args.optimizer_kind,
     optimization_params={"num_epochs": args.num_epochs, "lr": args.lr},

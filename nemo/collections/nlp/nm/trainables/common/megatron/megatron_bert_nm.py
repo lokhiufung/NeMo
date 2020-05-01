@@ -21,7 +21,7 @@ import sys
 
 import torch
 
-sys.path.append('path_to/Megatron-LM')
+sys.path.append('/nemo_nlp_shared/Megatron-LM')
 
 from megatron import get_args
 from megatron.initialize import initialize_megatron
