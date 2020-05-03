@@ -352,5 +352,5 @@ nf.train(
     callbacks=[callback_train, ckpt_callback, wand_callback] + callbacks_eval,
     lr_policy=lr_policy_fn,
     optimizer=args.optimizer_kind,
-    optimization_params={"num_epochs": args.num_epochs, "lr": args.lr},
+    optimization_params={"num_epochs": args.num_epochs, "lr": args.lr, "weight_decay": args.weight_decay},
 )
