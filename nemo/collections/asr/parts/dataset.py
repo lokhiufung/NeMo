@@ -244,7 +244,7 @@ class KaldiFeatureDataset(Dataset):
 
         # Match transcripts to features
         text_path = os.path.join(kaldi_dir, 'text')
-        parser = parsers.make_parser(labels, 'en', unk_id=unk_index, blank_id=self.blank_index)
+        parser = parsers.make_parser(labels, 'en', unk_id=unk_index, blank_id=self.blank_index, do_normalize=normalize)
         with open(text_path, 'r') as f:
             for line in f:
                 split_idx = line.find(' ')
@@ -255,9 +255,9 @@ class KaldiFeatureDataset(Dataset):
                 if audio_features is not None:
 
                     text = line[split_idx:].strip()
-                    if normalize:
-                        # TODO: WTF?
-                        text = parser._normalize(text)
+                    # if normalize:
+                    #     # TODO: WTF?
+                    #     text = parser._normalize(text)
 
                     dur = id2dur[utt_id] if id2dur else None
 
