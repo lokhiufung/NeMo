@@ -61,4 +61,4 @@ class CTCLossNM(LossNM):
         return loss
 
     def _loss_function(self, **kwargs):
-        return self._loss(**kwargs)
+        return self._loss(*(kwargs.values()))
